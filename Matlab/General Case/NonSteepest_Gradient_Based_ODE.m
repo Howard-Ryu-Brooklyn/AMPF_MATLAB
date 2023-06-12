@@ -1,0 +1,68 @@
+function x_dot = NonSteepest_Gradient_Based_ODE(x, G, p_desired, ndim, theta, model)
+%GRADIENT_BASED_ODE 이 함수의 요약 설명 위치
+%   자세한 설명 위치
+% 경우의수 나누기
+% ndim, model 별로
+
+nagent = G.numnodes;
+bar_error_ji = zeros(nagent, nagent);
+kang=0.8; % angular velocity gain
+d = 0.15; %[m]
+
+if ndim == 2
+    Q = [cos(theta), sin(theta);
+        -sin(theta), cos(theta)];
+    %     ode45에서 열벡터 형태로 계산하기 때문에 바꿔줘야함
+    % x = [ori; pos]
+    ori = x(1:nagent);
+    pos = reshape(x(nagent+1:end), [ndim, nagent]);
+elseif ndim == 3
+    Q = [cos(theta), sin(theta), 0;
+        -sin(theta), cos(theta), 0;
+        0, 0, 1];
+    ori=x(1:ndim*nagent);
+    pos = reshape(x(ndim*nagent+1:end), [ndim, nagent]);
+end
+ori_dot=zeros(size(ori));
+pos_dot = zeros(size(pos));
+
+
+for k=1:nagent
+    u_global = zeros(ndim,1);
+
+    for j=1:nagent
+        if any(j == successors(G,k))
+            zji = pos(:,j) - pos(:,k);
+            z_s_ji = p_desired(:,j) - p_desired(:,k);
+            bar_error_ji(k,j) = norm(zji)^2 - norm(z_s_ji)^2; % 1x1
+            u_global = u_global  +  Q*bar_error_ji(k,j)*zji;
+        end
+    end % for j
+
+
+    % agent model
+    if strcmp(model, 'single integrator')
+        pos_dot(:,k) = u_global;
+        ori_dot(k) = 0;
+    elseif strcmp(model, 'nonholonomic')
+        if ndim==2
+            input = [cos(ori(k)), sin(ori(k));
+                -1/d*sin(ori(k)), 1/d*cos(ori(k))]*u_global;
+            dots=[cos(ori(k)), 0; ...
+                sin(ori(k)), 0; ...
+                0, 1]*input;
+            pos_dot(:,k) = dots(1:2);
+            ori_dot(k)= dots(3);
+        end
+    end
+    
+    % leader circle input
+    if k==1
+        pos_dot(:,k) = 0.2*[-pos(2,k); pos(1,k)];
+    end
+
+end % for k
+
+x_dot = [ori_dot(:); pos_dot(:)];
+end
+

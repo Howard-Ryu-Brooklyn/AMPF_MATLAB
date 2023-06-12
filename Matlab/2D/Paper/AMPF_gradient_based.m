@@ -1,0 +1,102 @@
+clc; close all; clear;
+
+% Declare ayclic minimally acyclic persistent graph
+% network topology is AMP
+% For now, triangle amp
+n = 3;
+G = digraph([2 3 3],[1 1 2]);
+% G.Nodes.names = {'Leader', 'Follower 1', 'Follower 2'}';
+G.Nodes.names = {'1', '2', '3'}';
+figure(1),
+plot(G,'NodeLabel', G.Nodes.names)
+title('network topology of AMPF');
+
+d = [2, 1]; % demension of xy, theta
+
+r = 5; % formation size
+s = 0.1; % quiver arrow size
+
+% generate p* randomly satisfied with triangle constraints
+p_desired = r*(rand(d(1), n));
+orient_desired = 2*pi*(rand(d(2), n)-0.5);
+% check triangle constraints
+% TO DO (almost)
+
+% calculate relative displacement distance
+distance = zeros(1, G.numedges);
+for k=1:G.numedges
+    distance(k) = norm(p_desired(:,G.Edges{k,1}(1)) - p_desired(:,G.Edges{k,1}(2)));
+end
+
+% plot desired framework
+figure(2),
+for k=1:n
+    % draw edges
+    edge=[p_desired(:, G.Edges{k,1}(1)), p_desired(:, G.Edges{k,1}(2))];
+    plot(edge(1,:), edge(2,:), 'k'); hold on;
+    % draw agent orientaion
+    quiver(p_desired(1,k), p_desired(2,k), s*cos(orient_desired(1,k)), s*sin(orient_desired(1,k)), 'k');
+    quiver(p_desired(1,k), p_desired(2,k), -0.5*s*sin(orient_desired(1,k)), 0.5*s*cos(orient_desired(1,k)), 'k*');
+    % put name of node
+    text(p_desired(1,k)+0.05, p_desired(2,k)+0.05, sprintf(G.Nodes.names{k,1},k));
+end
+% draw position of agent
+scatter(p_desired(1,:), p_desired(2,:), 'filled', 'r'); grid on;
+xlabel('[m]'); ylabel('[m]'); axis equal;
+title('desired realization for formation control');
+
+%%
+% set intial value of position and attitude randomly
+p0 = r*(rand(d(1), n) - 0.5);
+a0 = 2*pi*(rand(d(2), n) - 0.5);
+
+%%
+clc; close all
+% x = [att; pos]
+DE = @(t,x) NonSteepest_Gradient_Based_ODE(x, G, p_desired, d, 0, 'SI', false);
+opts = odeset('RelTol',1e-6,'AbsTol',1e-8);
+[t,x] = ode45(DE, [0 25], [a0(:); p0(:)], opts);
+
+att_end = reshape(x(end, 1:d(2)*n), d(2), n);
+p_end = reshape(x(end, d(2)*n+1:end), d(1), n);
+
+p_traj = cell(n,1);
+for k = 1:n
+    p_traj{k} = x(:, d(1)*(k-1)+1+d(2)*n : d(1)*k+ d(2)*n)';
+end
+
+figure(3),
+for k=1:n
+    % draw edges
+    edge=[p_end(:, G.Edges{k,1}(1)), p_end(:, G.Edges{k,1}(2))];
+    plot(edge(1,:), edge(2,:), 'k'); hold on;
+    % draw agent orientaion
+    quiver(p0(1,k), p0(2,k), s*cos(a0(k)), s*sin(a0(k)), 'k');
+    quiver(p0(1,k), p0(2,k), -0.5*s*sin(a0(k)), 0.5*s*cos(a0(k)), 'k*');
+    quiver(p_end(1,k), p_end(2,k), s*cos(att_end(k)), s*sin(att_end(k)), 'k');
+    quiver(p_end(1,k), p_end(2,k), -0.5*s*sin(att_end(k)), 0.5*s*cos(att_end(k)), 'k*');
+    % trajectories
+    plot(p_traj{k}(1,:), p_traj{k}(2,:), 'b:', 'linewidth', 2);
+    % put name of node
+    text(p0(1,k)+0.05, p0(2,k)+0.05, sprintf(G.Nodes.names{k,1},k));
+    text(p_end(1,k)+0.05, p_end(2,k)+0.05, sprintf(G.Nodes.names{k,1},k));
+
+end
+% draw position of agent
+scatter(p0(1,:),p0(2,:), 'filled', 'b');
+scatter(p_end(1,:), p_end(2,:), 'filled', 'r');
+xlabel('[m]'); ylabel('[m]'); grid on; axis equal
+
+% for i=1:500:length(p_traj{1})
+%     for k=1:n
+%             p_snap = reshape(x(i, d(2)*n+1:end), d(1), n);
+%             edge=[p_snap(:, G.Edges{k,1}(1)), p_snap(:, G.Edges{k,1}(2))];
+%             plot(edge(1,:), edge(2,:), 'g'); hold on;
+%         plot(p_traj{k}(1,i), p_traj{k}(2,i), 'g*', 'linewidth', 2); hold on;
+%         drawnow
+%     end
+% end
+
+
+
+
