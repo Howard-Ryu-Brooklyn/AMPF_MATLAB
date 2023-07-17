@@ -62,12 +62,12 @@ los31=atan2(los_vec31(2), los_vec31(1));
 a0(2) = los21 + fov*(rand(1,1)-0.5);
 a0(3) = los31 + fov*(rand(1,1)-0.5);
 
-%%
+
 clc; close all
 % x = [att; pos]
 DE = @(t,x) NonSteepest_Gradient_Based_ODE(x, G, p_desired, d, 0, 'SI', false);
 opts = odeset('RelTol',1e-6,'AbsTol',1e-8);
-[t,x] = ode45(DE, [0 25], [a0(:); p0(:)], opts);
+[t,x] = ode45(DE, [0 0.3], [a0(:); p0(:)], opts);
 
 att_end = reshape(x(end, 1:d(2)*n), d(2), n);
 p_end = reshape(x(end, d(2)*n+1:end), d(1), n);
@@ -86,8 +86,8 @@ for k=1:n
     quiver(p0(1,k), p0(2,k), s*cos(a0(k)), s*sin(a0(k)), 'k');
     quiver(p0(1,k), p0(2,k), -0.5*s*sin(a0(k)), 0.5*s*cos(a0(k)), 'k*');
     if k~=1
-        quiver(p0(1,k), p0(2,k), s*cos(a0(k) - fov/2), s*sin(a0(k) - fov/2), 'b*');
-        quiver(p0(1,k), p0(2,k), s*cos(a0(k) + fov/2), s*sin(a0(k) + fov/2), 'b*');
+        quiver(p0(1,k), p0(2,k), s*cos(a0(k) - fov/2), s*sin(a0(k) - fov/2), 'r*');
+        quiver(p0(1,k), p0(2,k), s*cos(a0(k) + fov/2), s*sin(a0(k) + fov/2), 'r*');
     end
     quiver(p_end(1,k), p_end(2,k), s*cos(att_end(k)), s*sin(att_end(k)), 'k');
     quiver(p_end(1,k), p_end(2,k), -0.5*s*sin(att_end(k)), 0.5*s*cos(att_end(k)), 'k*');
@@ -114,6 +114,9 @@ xlabel('[m]'); ylabel('[m]'); grid on; axis equal
 %         drawnow
 %     end
 % end
+
+% figure, 
+% plot(t, )
 
 
 
