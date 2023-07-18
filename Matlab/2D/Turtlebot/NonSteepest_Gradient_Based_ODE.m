@@ -15,7 +15,7 @@ Q = [cos(theta), sin(theta);
 att = x(1:d(2)*n);
 pos = reshape(x(d(2)*n+1:end), [d(1), n]);
 
-att_dot=zeros(size(att));
+att_dot = zeros(size(att));
 pos_dot = zeros(size(pos));
 
 for k=1:n
