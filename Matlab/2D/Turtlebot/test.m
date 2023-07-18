@@ -1,5 +1,3 @@
-function x_dot = NonSteepest_Gradient_Based_ODE(x, G, p_desired, d, theta, model, movingleader)
-%GRADIENT_BASED_ODE 이 함수의 요약 설명 위치
 
 n = G.numnodes;
 bar_error_ji = zeros(n, n);
@@ -12,8 +10,10 @@ Q = [cos(theta), sin(theta);
 att = x(1:d(2)*n);
 pos = reshape(x(d(2)*n+1:end), [d(1), n]);
 
-att_dot = zeros(size(att));
+att_dot=zeros(size(att));
 pos_dot = zeros(size(pos));
+
+kth = 0.5;
 
 for k=1:n
     u_global = zeros(d(1),1);
@@ -42,11 +42,13 @@ for k=1:n
         pos_dot(:,k) = dots(1:2);
         att_dot(k)= dots(3);
     elseif strcmp(model, 'NH') % Nonholonomic 
-        h = [cos(att(k), sin(att(k)))];
-        h_perp = [-sin(att(k)), cos(att(k))];
-        
-        v = h*u_global;
-        w = h_perp*u_global;
+        size(u_global);
+        thetae = theta - atan2(u_global(2), u_global(1));
+
+        v = norm(u_global)*(1-thetae/pi);
+        w = kth*thetae;
+        disp(v)
+        disp(w);
 
         pos_dot(1,k) = v*cos(att(k));
         pos_dot(2,k) = v*sin(att(k));
@@ -61,5 +63,3 @@ if movingleader==true
 end
 
 x_dot = [att_dot(:); pos_dot(:)];
-end
-
