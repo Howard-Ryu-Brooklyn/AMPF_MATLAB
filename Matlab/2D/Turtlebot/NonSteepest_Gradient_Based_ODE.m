@@ -1,5 +1,6 @@
 function x_dot = NonSteepest_Gradient_Based_ODE(x, G, p_desired, d, theta, model, movingleader)
 %GRADIENT_BASED_ODE 이 함수의 요약 설명 위치
+%theta: non-steepest gradient descent angle
 
 n = G.numnodes;
 bar_error_ji = zeros(n, n);
@@ -8,15 +9,19 @@ l = 0.15; %[m]
 Q = [cos(theta), sin(theta);
     -sin(theta), cos(theta)];
 %     ode45에서 열벡터 형태로 계산하기 때문에 바꿔줘야함
+th = 1;
+xy = 2;
+
+
 % x = [ori; pos]
-att = x(1:d(2)*n);
-pos = reshape(x(d(2)*n+1:end), [d(1), n]);
+att = x(1:d(th)*n);
+pos = reshape(x(d(th)*n+1:end), [d(xy), n]);
 
 att_dot = zeros(size(att));
 pos_dot = zeros(size(pos));
 
 for k=1:n
-    u_global = zeros(d(1),1);
+    u_global = zeros(d(xy),1);
 
     for j=1:n
         if any(j == successors(G,k))
@@ -41,13 +46,13 @@ for k=1:n
 
         pos_dot(:,k) = dots(1:2);
         att_dot(k)= dots(3);
-    elseif strcmp(model, 'NH') % Nonholonomic 
-        h = [cos(att(k), sin(att(k)))];
+    elseif strcmp(model, 'NH') % Nonholonomic
+        h = [cos(att(k)), sin(att(k))];
         h_perp = [-sin(att(k)), cos(att(k))];
-        
+
         v = h*u_global;
         w = h_perp*u_global;
-
+        
         pos_dot(1,k) = v*cos(att(k));
         pos_dot(2,k) = v*sin(att(k));
         att_dot(k) = w;
@@ -61,5 +66,5 @@ if movingleader==true
 end
 
 x_dot = [att_dot(:); pos_dot(:)];
-end
+end % function
 
