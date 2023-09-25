@@ -1,0 +1,33 @@
+% calculate lost leader
+buf_lost = zeros(2,t.length);
+
+lf1_losvec = A(1).pos - A(2).pos;
+lf1_losang = atan2(lf1_losvec(2), lf1_losvec(1));
+
+if A(1).att - lf1_losang > FOV || A(1).att - lf1_losang < -FOV
+    buf_lost(1,k) = 1;
+else
+    buf_lost(1,k) = 1;
+end
+
+
+% save buffer
+for i=1:n_agent
+    BUF(i).pos(:,k) = A(i).pos;
+    BUF(i).pos_dot(:,k) = A(i).pos_dot;
+    BUF(i).att(:,k) = A(i).att;
+    BUF(i).att_dot(:,k) = A(i).att_dot;
+    BUF(i).formation_global(:,k) = A(i).formation_global;
+    BUF(i).formation_local(:,k) = A(i).formation_local;
+    BUF(i).feedback_linearized(:,k) = A(i).feedback_linearized;
+    BUF(i).localization_input(:,k) = A(i).localization_input;
+end
+buf_L.zeta1(:,k) = L.zeta1;
+buf_L.zeta2(:,k) = L.zeta2;
+buf_L.zeta1_dot(:,k) = L.zeta1_dot;
+buf_L.zeta2_dot(:,k) = L.zeta2_dot;
+buf_L.z_fil(:,k) = L.z_fil;
+buf_L.phi_fil(:,k) = L.phi_fil;
+buf_L.z_hat(:,k) = L.z_hat;
+buf_L.x_hat_dot(:,k) = L.x_hat_dot;
+buf_L.x_hat(:,k) = L.x_hat;
