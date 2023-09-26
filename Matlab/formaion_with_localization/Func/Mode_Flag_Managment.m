@@ -14,6 +14,10 @@ for i=1:n_agent
     A(i).lf_losvec = A(1).pos - A(i).pos;
     A(i).lf_losang = atan2(A(i).lf_losvec(2), A(i).lf_losvec(1));
 
+    if A(i).lf_losang < 0
+        A(i).lf_losang = A(i).lf_losang + 2*pi;
+    end
+
     if A(i).att - A(i).lf_losang > FOV || A(i).att - A(i).lf_losang < -FOV
         A(i).lost_leader = true;
     else

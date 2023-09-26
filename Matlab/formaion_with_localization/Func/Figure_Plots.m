@@ -1,6 +1,6 @@
 end_pos = [A(1).pos, A(2).pos, A(3).pos];
 itv = 300;
-s_traj = 0.2;
+% s_traj = 0.3;
 % start end positions and attitudes, edges and trajectories
 figure,
 for i=1:n_agent
@@ -13,8 +13,8 @@ for i=1:n_agent
     quiver(A(i).pos(1), A(i).pos(2), -0.5*s*sin(A(i).att), 0.5*s*cos(A(i).att), 'k*'); hold on;
 
     plot(BUF(i).pos(1,:), BUF(i).pos(2,:), 'k--', 'LineWidth', 2); hold on; % traj pos
-    quiver(BUF(i).pos(1,1:itv:end), BUF(i).pos(2,1:itv:end), s_traj*cos(BUF(i).att(1:itv:end)), s_traj*sin(BUF(i).att(1:itv:end)), 'g'); hold on; % traj att
-    quiver(BUF(i).pos(1,1:itv:end), BUF(i).pos(2,1:itv:end), -0.5*s_traj*sin(BUF(i).att(1:itv:end)), 0.5*s_traj*cos(BUF(i).att(1:itv:end)), 'g*'); hold on;
+    quiver(BUF(i).pos(1,1:itv:end), BUF(i).pos(2,1:itv:end), s*cos(BUF(i).att(1:itv:end)), s*sin(BUF(i).att(1:itv:end)), 'g'); hold on; % traj att
+    quiver(BUF(i).pos(1,1:itv:end), BUF(i).pos(2,1:itv:end), -0.5*s*sin(BUF(i).att(1:itv:end)), 0.5*s*cos(BUF(i).att(1:itv:end)), 'g*'); hold on;
 
     edge = [A(G.Edges{i,1}(1)).pos, A(G.Edges{i,1}(2)).pos]; hold on; % edge
     plot(edge(1,:), edge(2,:), 'r--'); hold on;
