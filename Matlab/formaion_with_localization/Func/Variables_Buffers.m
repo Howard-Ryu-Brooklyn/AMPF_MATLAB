@@ -7,7 +7,7 @@ d = 0.15; %[m]
 
 V_SAT = 0.22; %[m/s]
 W_SAT = 2.84; %[rad/s]
-FOV = 40*D2R; %[rad]
+FOV = 5*D2R; %[rad]
 SEARCH_W = 1; %[rad/s]
 SUBMODE_TRESHOLD = 1e-3;
 

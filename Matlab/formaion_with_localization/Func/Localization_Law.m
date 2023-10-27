@@ -13,24 +13,13 @@ for i=1:n_agent
         L.x_hat_dot = L.gamma*(L.z_fil - L.z_hat)*L.phi_fil;
         L.x_hat = L.x_hat + L.x_hat_dot*t.ts;
 
-        if norm(L.x_hat_dot) < L.LOCALIZATION_TOLERANCE
-            if L.tol_cnt == 0; L.tol_ts = k*t.ts; end
-            
-            % fprintf(" %f = %f - %f = %f \n", k*t.ts, L.tol_ts, (L.tol_cnt)*t.ts, L.tol_ts + (L.tol_cnt-1)*t.ts);
+        L.tol_cnt = L.tol_cnt + 1;
 
-            if k*t.ts == L.tol_ts + (L.tol_cnt)*t.ts
-                % disp('in condition');
-                L.tol_cnt = L.tol_cnt + 1;
-            else
-                L.tol_cnt = 0;
-            end
-
-
-            if L.tol_cnt*t.ts > L.TOL_TIME
-                L.tol_tf = k*t.ts;
-                fprintf("localization has compeleted during %i ~ %i \n", L.tol_ts, L.tol_tf);
-                A(i).localization_flag = 0;
-            end
+        % localization is finished after TOL_TIME
+        if L.tol_cnt*t.ts > L.TOL_TIME
+            L.tol_tf = k*t.ts;
+            fprintf("localization has compeleted during %2.1f ~ %2.1f \n", L.tol_ts, L.tol_tf);
+            A(i).localization_flag = 0;
         end
     end
 end

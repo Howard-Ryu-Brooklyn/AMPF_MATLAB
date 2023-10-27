@@ -16,8 +16,7 @@ for i=1:n_agent
         A(i).att_dot = w;
 
     elseif (A(i).mode == 2) % localization mode
-        A(i).localization_input = [L.pe_amp*sin(L.pe_freq*k*t.ts), L.pe_amp*cos(2*L.pe_freq*k*t.ts)]';
-
+        A(i).localization_input = [L.pe_amp*sin(L.pe_freq*(k*t.ts + 15)), L.pe_amp*cos(2*L.pe_freq*(k*t.ts + 15))]';
         A(i).feedback_linearized = [
             cos(A(i).att), sin(A(i).att);
             -1/d*sin(A(i).att), 1/d*cos(A(i).att)] * A(i).localization_input;
@@ -36,7 +35,7 @@ for i=1:n_agent
         else
             A(i).att_dot = -SEARCH_W;
         end
-        
+
     end
 
     % Euler integration

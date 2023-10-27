@@ -1,0 +1,12 @@
+MATLAB LINUX
+
+- DCASL 라이센스 활성화 하기  
+/usr/local/MATLAB/R2022b/bin -> ./activate~
+network.lic파일 넣기
+
+SERVER 172.26.159.99 27000
+USE_SERVER
+
+- 윈도우 단축키로 설정
+상단 탭 HOME -> Preferences -> Keyboard -> Shortcuts -> Active settings -> Windows Default Set
+

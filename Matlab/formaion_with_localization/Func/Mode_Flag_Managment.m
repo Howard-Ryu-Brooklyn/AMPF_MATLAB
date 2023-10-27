@@ -23,13 +23,25 @@ for i=1:n_agent
     else
         A(i).lost_leader = false;
     end
+
 end
 
 % submode mangagement
-for i=1:n_agent
-    if (vecnorm(A(i).input_source(:,A(i).submode)) < SUBMODE_TRESHOLD)
-        A(i).submode = mod(A(i).submode + 1, 3);
-        if (A(i).submode == 0);       A(i).submode = A(i).submode + 1; end
-        if (A(i).submode == i);       A(i).submode = 1; end
+if (A(3).localization_flag == false)
+    if (vecnorm(A(3).input_source(:,A(3).submode)) < SUBMODE_TRESHOLD)
+        if (A(3).submode == 1)
+            A(3).submode = 2;
+        else
+            A(3).submode = 1;
+        end
     end
 end
+
+% % Follower 2
+% for i=1:n_agent
+%     if (vecnorm(A(i).input_source(:,A(i).submode)) < SUBMODE_TRESHOLD)
+%         A(i).submode = mod(A(i).submode + 1, 3);
+%         if (A(i).submode == 0);       A(i).submode = A(i).submode + 1; end
+%         if (A(i).submode == i);       A(i).submode = 1; end
+%     end
+% end

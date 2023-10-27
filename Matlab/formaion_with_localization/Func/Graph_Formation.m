@@ -17,7 +17,7 @@ F = struct('formation_mode', "Fixed", ... % Random or fixed
     'p_desired', zeros(dim_xy, n_agent), ...
     'att_desired', zeros(dim_th, n_agent), ...
     'distance_desired', zeros(1, G.numedges), ...
-    'plot', 'false' ... % true or false
+    'plot', 'true' ... % true or false
     );
 
 % ----------------------------------------------------
@@ -25,13 +25,21 @@ F = struct('formation_mode', "Fixed", ... % Random or fixed
 if (strcmp(F.formation_mode, "Random"))
     F.p_desired = r*(rand(dim_xy, n_agent));
     F.att_desired = 2*pi*(rand(dim_th, n_agent)-0.5);
+    fprintf("desired Formation has been generated Randomly \n\n");
 else
-%     F.p_desired = [3.7563,    2.5298,    4.4545;
-%         1.2755,    3.4954,    4.7965];
-%     F.att_desired = [0.2967   -2.2706   -2.2036];
-F.p_desired = [0.2772, 1.3982,    1.9186;
-    0.2986, 1.7818,    1.0944 ];
-F.att_desired = [-1.5236    2.1408   -1.5439];
+    %     % CASE 1
+    %     F.p_desired = [1.6110, 0.3658, 1.7730;
+    %         1.1534, 0.4799, 0.0573];
+    %     F.att_desired = [-0.0635,-2.0865, 3.0076];
+    % CASE 2`
+    F.p_desired = [0.2772, 1.3982, 1.9186;
+        0.2986, 1.7818, 1.0944 ];
+    F.att_desired = [-1.5236    2.1408   -1.5439];
+    % CASE 3
+    %     F.p_desired =[0.1623    1.5514    0.8717;
+    %         1.8588    0.9736    0.8936];
+    %     F.att_desired = [1.5942   -0.7512    0.4261];
+    fprintf("desired Formation has been generated as USER DEFINED \n\n");
 end
 
 % check triangle constraints (TODO)
@@ -41,6 +49,8 @@ end
 for k=1:G.numedges
     F.distance_desired(k) = norm(F.p_desired(:,G.Edges{k,1}(1)) - F.p_desired(:,G.Edges{k,1}(2)));
 end
+fprintf("desired distance of formation is shown as below\n");
+fprintf("zs12: %1.2f,  zs13: %1.2f,  zs23: %1.2f \n\n", F.distance_desired(1), F.distance_desired(2), F.distance_desired(3));
 
 % plot desired framework
 if(strcmp(F.plot, 'true'))
